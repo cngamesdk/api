@@ -1,0 +1,39 @@
+installed: 0
+common:
+  account_prefixs: []
+  test_phones: []
+  background_rsa_private_key:
+  background_rsa_public_key:
+  front_rsa_private_key:
+  front_rsa_public_key:
+  sql_md5_crypt_key:
+  aes_crypt_key:
+  token_crypt_key:
+  token_sign_key:
+  common_hash_key:
+  publishing_pay_channel_id: 0
+  game_hash_key:
+  ctx_token_data_key: token-data
+  authorization_head_key: token
+  ctx_request_id_key: request_id
+mysql:
+  path: [your host]
+  port: "3306"
+  config: charset=utf8mb4&parseTime=True&loc=Local
+  db-name: [your dbname]
+  username: [your user]
+  password: [your password]
+  max-idle-conns: 10
+  max-open-conns: 100
+redis:
+  db: 0
+  addr: [your address]
+  password: [your password]
+log:
+  filename: [your filename]
+  max-size: 1024
+  max-backups: 30
+  max-age: 90
+  compress: true
+server:
+  host: 0.0.0.0:8080
