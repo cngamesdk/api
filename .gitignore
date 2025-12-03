@@ -1,0 +1,11 @@
+#Env
+.DS_Store
+
+#IDE
+.idea
+
+#日志目录
+/logs/
+
+#配置目录
+/config/config.yaml
