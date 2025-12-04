@@ -209,7 +209,7 @@ func (receiver *UserService) PasswordRetrievePhone(ctx context.Context, req *api
 		global.Logger.Warn("手机号与账号绑定不一致", zap.Any("err", err))
 		return
 	}
-	password := random.RandNumeral(6)
+	password := req.Password
 	updateUserModel := user.NewOdsUserInfoLogModel()
 	updateUserModel.Id = userModel.Id
 	updateUserModel.PlatformId = req.PlatformId
@@ -219,7 +219,6 @@ func (receiver *UserService) PasswordRetrievePhone(ctx context.Context, req *api
 		global.Logger.Error("更新密码异常", zap.Any("err", updateErr))
 		return
 	}
-	resp.Password = password
 	return
 }
 

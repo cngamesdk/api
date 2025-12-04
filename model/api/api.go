@@ -374,15 +374,20 @@ type TokenLoginResp struct {
 
 type PasswordRetrievePhoneReq struct {
 	CommonReq
-	UserName string `json:"user_name" form:"user_name" binding:"required"`
-	Phone    string `json:"phone" form:"phone" binding:"required"`
-	Code     string `json:"code" form:"code" binding:"required"`
+	UserName        string `json:"user_name" form:"user_name" binding:"required"`
+	Phone           string `json:"phone" form:"phone" binding:"required"`
+	Password        string `json:"password" form:"password" binding:"required"`
+	ConfirmPassword string `json:"confirm_password" form:"confirm_password" binding:"required"`
+	Code            string `json:"code" form:"code" binding:"required"`
 }
 
 func (receiver *PasswordRetrievePhoneReq) Format(ctx context.Context) {
 	receiver.CommonReq.Format(ctx)
 	receiver.UserName = strings.ToLower(strings.TrimSpace(receiver.UserName))
 	receiver.Phone = strings.ToLower(strings.TrimSpace(receiver.Phone))
+	receiver.Code = strings.ToLower(strings.TrimSpace(receiver.Code))
+	receiver.Password = strings.TrimSpace(receiver.Password)
+	receiver.ConfirmPassword = strings.TrimSpace(receiver.ConfirmPassword)
 }
 
 func (receiver *PasswordRetrievePhoneReq) Validate(ctx context.Context) (err error) {
@@ -402,11 +407,18 @@ func (receiver *PasswordRetrievePhoneReq) Validate(ctx context.Context) (err err
 		err = errors2.Wrap(error2.ErrorParamEmpty, "验证码")
 		return
 	}
+	if validateErr := validate.Password(receiver.Password); validateErr != nil {
+		err = validateErr
+		return
+	}
+	if receiver.Password != receiver.ConfirmPassword {
+		err = errors2.New("密码与确认密码不一致")
+		return
+	}
 	return
 }
 
 type PasswordRetrievePhoneResp struct {
-	Password string `json:"password"`
 }
 
 type AccountRetrievePhoneReq struct {
