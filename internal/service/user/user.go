@@ -8,6 +8,7 @@ import (
 	"cngamesdk.com/api/internal/service/token"
 	"cngamesdk.com/api/model/api"
 	error3 "cngamesdk.com/api/model/api/error"
+	user3 "cngamesdk.com/api/model/cache/user"
 	"cngamesdk.com/api/model/sql/log"
 	"cngamesdk.com/api/model/sql/user"
 	"context"
@@ -323,6 +324,7 @@ func (receiver *UserService) PasswordModify(ctx context.Context, req *api.Passwo
 		global.Logger.Error("修改密码异常", zap.Any("err", saveErr))
 		return
 	}
+
 	return
 }
 
@@ -343,6 +345,10 @@ func (receiver *UserService) PhoneBind(ctx context.Context, req *api.PhoneBindRe
 		global.Logger.Error("修改异常", zap.Any("err", saveErr))
 		return
 	}
+
+	//删除缓存
+	user3.NewOdsUserInfoLogModel().DelById(ctx, req.UserId)
+
 	return
 }
 
@@ -359,6 +365,10 @@ func (receiver *UserService) IdCardBind(ctx context.Context, req *api.IdCardBind
 		global.Logger.Error("修改异常", zap.Any("err", saveErr))
 		return
 	}
+
+	//删除缓存
+	user3.NewOdsUserInfoLogModel().DelById(ctx, req.UserId)
+
 	return
 }
 
@@ -374,6 +384,10 @@ func (receiver *UserService) AccountStatusModify(ctx context.Context, req *api.A
 		global.Logger.Error("修改异常", zap.Any("err", saveErr))
 		return
 	}
+
+	//删除缓存
+	user3.NewOdsUserInfoLogModel().DelById(ctx, req.UserId)
+
 	return
 }
 
@@ -516,28 +530,5 @@ func BuildUserAuthResp(ctx context.Context, req *user.OdsUserInfoLogModel) (resp
 		return
 	}
 	resp.Token = tokenResp
-	return
-}
-
-// BuildPopUp 构建弹窗
-func BuildPopUp(ctx context.Context, req api.BuildPopUpReq) (resp api.PopUpConfig, err error) {
-	if req.UserId <= 0 {
-		resp = api.PopUpConfig{
-			Show: 1,
-			Url:  "https://www.baidu.com/",
-			Btns: []api.PopUpConfigBtn{
-				{Type: api.PopUpConfigBtnConfirm, Text: "好的"},
-			},
-		}
-	} else {
-		resp = api.PopUpConfig{
-			Show: 1,
-			Url:  "https://www.baidu.com/",
-			Btns: []api.PopUpConfigBtn{
-				{Type: api.PopUpConfigBtnCancel, Text: "取消"},
-				{Type: api.PopUpConfigBtnConfirm, Text: "确认"},
-			},
-		}
-	}
 	return
 }

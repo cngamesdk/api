@@ -2,6 +2,7 @@ package api
 
 import (
 	"cngamesdk.com/api/global"
+	"cngamesdk.com/api/internal/service/pop_up"
 	"cngamesdk.com/api/internal/service/user"
 	"cngamesdk.com/api/model/api"
 	"context"
@@ -28,12 +29,7 @@ func (receiver *CommonLogic) Init(ctx context.Context, req *api.InitReq) (resp a
 	}
 	resp.SwitchRealName = 1
 	resp.Heartbeat = api.HeartbeatSwitch{Toggle: 1, Interval: 30}
-	popUp, popUpErr := user.BuildPopUp(ctx, api.BuildPopUpReq{CommonReq: req.CommonReq, Source: api.BuildPopUpSourceInit})
-	if popUpErr != nil {
-		global.Logger.Error("构建弹窗失败", zap.Any("err", popUpErr))
-		return
-	}
-	resp.PopUp = popUp
+	resp.PopUp = (&pop_up.PopUpService{}).GetPopUpConfig(ctx, api.BuildPopUpReq{CommonReq: req.CommonReq, Source: api.BuildPopUpSourceInit})
 	return
 }
 
@@ -98,12 +94,9 @@ func (receiver *CommonLogic) AccountLogin(ctx context.Context, req *api.AccountL
 		global.Logger.Error("账号登录异常", zap.Any("err", serviceErr))
 		return
 	}
-	popUpConfig, popUpConfigErr := user.BuildPopUp(ctx, api.BuildPopUpReq{CommonReq: req.CommonReq, UserId: serviceResp.Id, Source: api.BuildPopUpSourceLogin})
-	resp.PopUp = popUpConfig
-	if popUpConfigErr != nil {
-		global.Logger.ErrorCtx(ctx, "构建弹窗异常", zap.Any("err", popUpConfigErr))
-		return
-	}
+
+	resp.PopUp = (&pop_up.PopUpService{}).GetPopUpConfig(ctx, api.BuildPopUpReq{CommonReq: req.CommonReq, UserId: serviceResp.Id, Source: api.BuildPopUpSourceLogin})
+
 	//写登录日志
 	loginLogReq := &api.LoginLogReq{}
 	loginLogReq.UserId = serviceResp.Id
@@ -155,13 +148,7 @@ func (receiver *CommonLogic) SmsLogin(ctx context.Context, req *api.SmsLoginReq)
 		return
 	}
 
-	buildPopUp, popUpErr := user.BuildPopUp(ctx, api.BuildPopUpReq{CommonReq: req.CommonReq, UserId: serviceResp.Id, Source: api.BuildPopUpSourceLogin})
-	resp.PopUp = buildPopUp
-	if popUpErr != nil {
-		err = popUpErr
-		global.Logger.Error("构建弹窗异常", zap.Error(popUpErr))
-		return
-	}
+	resp.PopUp = (&pop_up.PopUpService{}).GetPopUpConfig(ctx, api.BuildPopUpReq{CommonReq: req.CommonReq, UserId: serviceResp.Id, Source: api.BuildPopUpSourceLogin})
 
 	//写登录日志
 	loginLogReq := &api.LoginLogReq{}
@@ -195,13 +182,7 @@ func (receiver *CommonLogic) TokenLogin(ctx context.Context, req *api.TokenLogin
 		return
 	}
 
-	buildPopUp, popUpErr := user.BuildPopUp(ctx, api.BuildPopUpReq{CommonReq: req.CommonReq, UserId: serviceResp.Id, Source: api.BuildPopUpSourceLogin})
-	resp.PopUp = buildPopUp
-	if popUpErr != nil {
-		err = popUpErr
-		global.Logger.Error("构建弹窗异常", zap.Error(popUpErr))
-		return
-	}
+	resp.PopUp = (&pop_up.PopUpService{}).GetPopUpConfig(ctx, api.BuildPopUpReq{CommonReq: req.CommonReq, UserId: serviceResp.Id, Source: api.BuildPopUpSourceLogin})
 
 	//写登录日志
 	loginLogReq := &api.LoginLogReq{}
@@ -266,13 +247,10 @@ func (receiver *CommonLogic) Pay(ctx context.Context, req *api.PayReq) (resp api
 		err = errors2.New("支付方式未知" + req.PayType)
 		return
 	}
-	buildPopUp, popUpErr := user.BuildPopUp(ctx, api.BuildPopUpReq{CommonReq: req.CommonReq, UserId: req.UserId, Source: api.BuildPopUpSourcePay})
-	resp.PopUp = buildPopUp
-	if popUpErr != nil {
-		err = popUpErr
-		global.Logger.Error("构建弹窗异常", zap.Error(popUpErr))
-		return
-	}
+
+	popUpConfig := (&pop_up.PopUpService{}).GetPopUpConfig(ctx, api.BuildPopUpReq{CommonReq: req.CommonReq, UserId: req.UserId, Source: api.BuildPopUpSourcePay})
+	resp.PopUp = popUpConfig
+
 	userService := &user.UserService{}
 	serviceResp, serviceErr := userService.Pay(ctx, req)
 	if serviceErr != nil {
@@ -281,7 +259,7 @@ func (receiver *CommonLogic) Pay(ctx context.Context, req *api.PayReq) (resp api
 		return
 	}
 	resp = serviceResp
-	resp.PopUp = buildPopUp
+	resp.PopUp = popUpConfig
 	return
 }
 
@@ -398,13 +376,10 @@ func (receiver *CommonLogic) Heartbeat(ctx context.Context, req *api.HeartbeatRe
 		err = validateErr
 		return
 	}
-	buildPopUp, popUpErr := user.BuildPopUp(ctx, api.BuildPopUpReq{CommonReq: req.CommonReq, UserId: req.UserId, Source: api.BuildPopUpSourceHeartbeat})
-	resp.PopUp = buildPopUp
-	if popUpErr != nil {
-		err = popUpErr
-		global.Logger.Error("构建弹窗异常", zap.Error(popUpErr))
-		return
-	}
+
+	popUpConfig := (&pop_up.PopUpService{}).GetPopUpConfig(ctx, api.BuildPopUpReq{CommonReq: req.CommonReq, UserId: req.UserId, Source: api.BuildPopUpSourceHeartbeat})
+	resp.PopUp = popUpConfig
+
 	userService := &user.UserService{}
 	_, serviceErr := userService.Heartbeat(ctx, req)
 	if serviceErr != nil {
