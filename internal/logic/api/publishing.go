@@ -2,6 +2,7 @@ package api
 
 import (
 	"cngamesdk.com/api/global"
+	"cngamesdk.com/api/internal/service/pop_up"
 	"cngamesdk.com/api/internal/service/publishing"
 	"cngamesdk.com/api/internal/service/user"
 	"cngamesdk.com/api/model/api"
@@ -26,13 +27,9 @@ func (receiver *PublishingLogic) Login(ctx context.Context, req *api.PublishingL
 		global.Logger.Error("服务调用异常", zap.Error(serviceErr))
 		return
 	}
-	buildPopUp, popUpErr := user.BuildPopUp(ctx, api.BuildPopUpReq{CommonReq: req.CommonReq, UserId: serviceResp.Id, Source: api.BuildPopUpSourceLogin})
-	resp.PopUp = buildPopUp
-	if popUpErr != nil {
-		err = popUpErr
-		global.Logger.Error("构建弹窗异常", zap.Error(popUpErr))
-		return
-	}
+
+	popUpConfig := (&pop_up.PopUpService{}).GetPopUpConfig(ctx, api.BuildPopUpReq{CommonReq: req.CommonReq, UserId: serviceResp.Id, Source: api.BuildPopUpSourceLogin})
+	resp.PopUp = popUpConfig
 
 	//保存登录日志
 	loginLogReq := &api.LoginLogReq{}
@@ -59,13 +56,10 @@ func (receiver *PublishingLogic) Pay(ctx context.Context, req *api.PublishingPay
 		err = validateErr
 		return
 	}
-	buildPopUp, popUpErr := user.BuildPopUp(ctx, api.BuildPopUpReq{CommonReq: req.CommonReq, UserId: req.UserId, Source: api.BuildPopUpSourcePay})
-	resp.PopUp = buildPopUp
-	if popUpErr != nil {
-		err = popUpErr
-		global.Logger.Error("构建弹窗异常", zap.Error(popUpErr))
-		return
-	}
+
+	popUpConfig := (&pop_up.PopUpService{}).GetPopUpConfig(ctx, api.BuildPopUpReq{CommonReq: req.CommonReq, UserId: req.UserId, Source: api.BuildPopUpSourcePay})
+	resp.PopUp = popUpConfig
+
 	service := &publishing.PublishingService{}
 	serviceResp, serviceErr := service.Pay(ctx, req)
 	if serviceErr != nil {

@@ -807,6 +807,12 @@ type PayChannelCallbackResp struct {
 	Content string
 }
 
+const (
+	PopUpConfigTypeRealName = "real_name" // 实名
+	PopUpConfigTypePhone    = "phone"     // 绑定手机
+	PopUpConfigTypeCustom   = "custom"    // 自定义
+)
+
 // PopUpConfig 弹窗配置
 type PopUpConfig struct {
 	Show int              `json:"show"`
@@ -815,10 +821,12 @@ type PopUpConfig struct {
 }
 
 const (
-	PopUpConfigBtnConfirm = "confirm"
-	PopUpConfigBtnCancel  = "cancel"
-	PopUpConfigBtnLogout  = "logout"
-	PopUpConfigBtnExit    = "exit"
+	PopUpConfigBtnConfirm  = "confirm"
+	PopUpConfigBtnCancel   = "cancel"
+	PopUpConfigBtnRealName = "real_name"
+	PopUpConfigBtnPhone    = "phone"
+	PopUpConfigBtnLogout   = "logout"
+	PopUpConfigBtnExit     = "exit"
 )
 
 type PopUpConfigBtn struct {
@@ -828,7 +836,7 @@ type PopUpConfigBtn struct {
 
 const (
 	BuildPopUpSourceInit      = "init"
-	BuildPopUpSourceLogin     = "before-login"
+	BuildPopUpSourceLogin     = "login"
 	BuildPopUpSourcePay       = "pay"
 	BuildPopUpSourceHeartbeat = "heartbeat"
 )
