@@ -48,6 +48,8 @@ github.com/cngamesdk/go-core v1.0.9-0.20251206012118-e091a12c1b6d h1:MJnqXf0cAtb
 github.com/cngamesdk/go-core v1.0.9-0.20251206012118-e091a12c1b6d/go.mod h1:F0+ah460RFt+Pda6O5aXLcYQ0Ecz9Y10/DCDYDSXYso=
 github.com/cngamesdk/go-core v1.0.9-0.20251208035904-182b8a494097 h1:4KBTgm5r5ieDJXnFtyUWwA5dE+2Dd4E0yogtPAJVQVI=
 github.com/cngamesdk/go-core v1.0.9-0.20251208035904-182b8a494097/go.mod h1:F0+ah460RFt+Pda6O5aXLcYQ0Ecz9Y10/DCDYDSXYso=
+github.com/cngamesdk/go-core v1.0.9-0.20251222104631-3360d1526d0b h1:1ZylY1nfTEYuuIP/quPZGxmINruLphxikK6eoOTHR5o=
+github.com/cngamesdk/go-core v1.0.9-0.20251222104631-3360d1526d0b/go.mod h1:F0+ah460RFt+Pda6O5aXLcYQ0Ecz9Y10/DCDYDSXYso=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

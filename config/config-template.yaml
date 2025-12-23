@@ -1,4 +1,6 @@
 installed: 0
+data_report:
+  record_launch_log: 0
 common:
   account_prefixs: []
   test_phones: []
