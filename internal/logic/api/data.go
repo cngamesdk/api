@@ -5,6 +5,7 @@ import (
 	"cngamesdk.com/api/internal/service/data"
 	"cngamesdk.com/api/model/api"
 	"context"
+	"github.com/cngamesdk/go-core/model/sql/log"
 	"go.uber.org/zap"
 )
 
@@ -18,6 +19,14 @@ func (receiver *DataReportLogic) Launch(ctx context.Context, req *api.LaunchRepo
 		err = validateErr
 		return
 	}
+
+	//不记录启动日志，方式过载
+	if global.Config.DataReport.RecordLaunchLog <= 0 {
+		if req.Action == log.LaunchLogActionLaunch {
+			return
+		}
+	}
+
 	service := data.DataReportService{}
 	serviceResp, serviceErr := service.Launch(ctx, req)
 	if serviceErr != nil {
