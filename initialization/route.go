@@ -45,7 +45,7 @@ func initAppRoute(engine *gin.Engine) {
 
 	//APP路由
 	appRoutes := engine.Group("app")
-	//appRoutes.Use(middleware.AppCrypt(), middleware.CheckAppSign())
+	appRoutes.Use(middleware.AppCrypt())
 	appRoutes.Use(middleware.ClientMobileGame())
 	{
 		appRoutes.POST("init", api.Init)
