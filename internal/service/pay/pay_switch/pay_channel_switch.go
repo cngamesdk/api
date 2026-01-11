@@ -97,13 +97,6 @@ func ruleMainGameId(ctx context.Context, req *api.PayReq, rule common.DimPayChan
 
 // ruleGameId 子游戏ID规则
 func ruleGameId(ctx context.Context, req *api.PayReq, rule common.DimPayChannelSwitchRule) (resp bool, err error) {
-	gameModel := game.NewDimGameModel()
-	gameDetailErr := gameModel.DetailInfoByGameId(ctx, req.GameId)
-	if gameDetailErr != nil {
-		err = gameDetailErr
-		global.Logger.ErrorCtx(ctx, "获取异常", zap.Error(gameDetailErr))
-		return
-	}
 	resp = handleRule(req.GameId, rule)
 	return
 }
@@ -134,13 +127,6 @@ func ruleSiteId(ctx context.Context, req *api.PayReq, rule common.DimPayChannelS
 
 // ruleUserId 用户ID规则
 func ruleUserId(ctx context.Context, req *api.PayReq, rule common.DimPayChannelSwitchRule) (resp bool, err error) {
-	gameModel := game.NewDimGameModel()
-	gameDetailErr := gameModel.DetailInfoByGameId(ctx, req.GameId)
-	if gameDetailErr != nil {
-		err = gameDetailErr
-		global.Logger.ErrorCtx(ctx, "获取异常", zap.Error(gameDetailErr))
-		return
-	}
 	resp = handleRule(req.UserId, rule)
 	return
 }
