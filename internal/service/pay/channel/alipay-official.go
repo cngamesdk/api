@@ -15,14 +15,14 @@ func NewAlipayOfficialPayChannel() *AlipayOfficialPayChannel {
 	return model
 }
 
-func (receiver *AlipayOfficialPayChannel) GetPayChannelId() int {
+func (receiver *AlipayOfficialPayChannel) GetPayChannelId() int64 {
 	return 2
 }
 
 func (receiver *AlipayOfficialPayChannel) GetConfig() AlipayPayConfig {
 	return AlipayPayConfig{
 		AppId:       "test",
-		CallbackUrl: "https://www.baidu.com/",
+		CallbackUrl: "https://www.xxx.com/",
 	}
 }
 

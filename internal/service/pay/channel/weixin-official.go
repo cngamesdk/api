@@ -15,14 +15,14 @@ func NewWeiXinOfficialPayChannel() *WeiXinOfficialPayChannel {
 	return model
 }
 
-func (receiver *WeiXinOfficialPayChannel) GetPayChannelId() int {
+func (receiver *WeiXinOfficialPayChannel) GetPayChannelId() int64 {
 	return 1
 }
 
 func (receiver *WeiXinOfficialPayChannel) GetConfig() WeiXinPayConfig {
 	return WeiXinPayConfig{
 		AppId:       "test",
-		CallbackUrl: "https://www.baidu.com/",
+		CallbackUrl: "https://www.xxx.com/",
 	}
 }
 
