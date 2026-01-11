@@ -768,7 +768,7 @@ type HeartbeatResp struct {
 
 type PayLogReq struct {
 	PayReq
-	PayChannelId int    `json:"pay_channel_id"`
+	PayChannelId int64  `json:"pay_channel_id"`
 	OrderId      string `json:"order_id"`
 }
 
@@ -795,12 +795,12 @@ func (receiver PayChannelCallbackReq) Validate() (err error) {
 	return
 }
 
-func (receiver PayChannelCallbackReq) GetPayChannelId() int {
+func (receiver PayChannelCallbackReq) GetPayChannelId() int64 {
 	channelId, ok := receiver["pay_channel_id"]
 	if !ok {
 		return 0
 	}
-	return cast.ToInt(channelId)
+	return cast.ToInt64(channelId)
 }
 
 type PayChannelCallbackResp struct {

@@ -30,7 +30,7 @@ type AlipayPayConfig struct {
 }
 
 type PayChannelInterface interface {
-	GetPayChannelId() int
+	GetPayChannelId() int64
 	PreOrder(ctx context.Context, req PreOrderReq) (resp PreOrderResp, err error)
 	Callback(ctx context.Context, req api.PayChannelCallbackReq) (resp api.PayCallbackData, err error)
 }
