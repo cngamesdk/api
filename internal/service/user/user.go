@@ -4,6 +4,7 @@ import (
 	"cngamesdk.com/api/global"
 	"cngamesdk.com/api/internal/service/pay"
 	"cngamesdk.com/api/internal/service/pay/channel"
+	"cngamesdk.com/api/internal/service/pay/pay_switch"
 	sms2 "cngamesdk.com/api/internal/service/sms"
 	"cngamesdk.com/api/internal/service/token"
 	"cngamesdk.com/api/model/api"
@@ -256,7 +257,8 @@ func (receiver *UserService) AccountRetrievePhone(ctx context.Context, req *api.
 
 // Pay SDK支付
 func (receiver *UserService) Pay(ctx context.Context, req *api.PayReq) (resp api.PayResp, err error) {
-	payChannel, payChannelErr := pay.GetSdkPayChannelFactory(req)
+	payChannelSwitchService := &pay_switch.PayChannelSwitchService{}
+	payChannel, payChannelErr := payChannelSwitchService.Handle(ctx, req)
 	preOrderReq := channel.PreOrderReq{
 		Money: req.Money,
 	}

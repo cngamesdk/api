@@ -60,6 +60,7 @@ func SavePayLog(ctx context.Context, req api.PayLogReq) (resp api.PayLogResp, er
 	return
 }
 
+// GetPayChannels 获取支付渠道列表
 func GetPayChannels() []channel.PayChannelInterface {
 	return []channel.PayChannelInterface{
 		channel.NewWeiXinOfficialPayChannel(),
@@ -67,14 +68,14 @@ func GetPayChannels() []channel.PayChannelInterface {
 	}
 }
 
-// GetSdkPayChannelFactory 获取SDK支付渠道
-func GetSdkPayChannelFactory(req *api.PayReq) (resp channel.PayChannelInterface, err error) {
-	//根据规则切换支付渠道
-	//游戏主体
-	payChannels := GetPayChannels()
-	payChannel := payChannels[0]
-	resp = payChannel
-	return
+// GetPayChannel 获取支付渠道
+func GetPayChannel(payChannelId int64) channel.PayChannelInterface {
+	for _, item := range GetPayChannels() {
+		if item.GetPayChannelId() == payChannelId {
+			return item
+		}
+	}
+	return nil
 }
 
 // PayCallback 充值回调
