@@ -143,11 +143,9 @@ func (receiver *PayChannelSwitchService) getRules(ctx context.Context) (
 // getPayChannelByWeight 通过权重获取支付渠道
 func (receiver *PayChannelSwitchService) getPayChannelByWeight(ctx context.Context, req pay.DimPayChannelSwitchModel) (resp int64, err error) {
 	type payChannelItem struct {
-		existsNum                            int     // 已经切的数量
-		existRate                            float64 // 已经切的比例
-		configRate                           float64 // 配置的比例
-		cacheKey                             string  // 缓存键值
-		common.DimPayChannelSwitchPayChannel         // 配置
+		existsNum                            int    // 已经切的数量
+		cacheKey                             string // 缓存键值
+		common.DimPayChannelSwitchPayChannel        // 配置
 	}
 	totalWeight := 0
 	totalExistsNum := 0
