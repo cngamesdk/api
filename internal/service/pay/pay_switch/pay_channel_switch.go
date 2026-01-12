@@ -34,6 +34,9 @@ var defaultRules = map[string]func(ctx context.Context, req *api.PayReq, rule co
 	"agent_id":     ruleAgentId,
 	"site_id":      ruleSiteId,
 	"user_id":      ruleUserId,
+	"oaid":         ruleOaid,
+	"imei":         ruleImei,
+	"idfv":         ruleIdfv,
 }
 
 func handleRule(value interface{}, rule common.DimPayChannelSwitchRule) (resp bool) {
@@ -128,6 +131,24 @@ func ruleSiteId(ctx context.Context, req *api.PayReq, rule common.DimPayChannelS
 // ruleUserId 用户ID规则
 func ruleUserId(ctx context.Context, req *api.PayReq, rule common.DimPayChannelSwitchRule) (resp bool, err error) {
 	resp = handleRule(req.UserId, rule)
+	return
+}
+
+// ruleOaid 安卓OAID规则
+func ruleOaid(ctx context.Context, req *api.PayReq, rule common.DimPayChannelSwitchRule) (resp bool, err error) {
+	resp = handleRule(req.Oaid, rule)
+	return
+}
+
+// ruleImei 安卓IMEI/iOS Idfa规则
+func ruleImei(ctx context.Context, req *api.PayReq, rule common.DimPayChannelSwitchRule) (resp bool, err error) {
+	resp = handleRule(req.Imei, rule)
+	return
+}
+
+// ruleIdfv iOS Idfv规则
+func ruleIdfv(ctx context.Context, req *api.PayReq, rule common.DimPayChannelSwitchRule) (resp bool, err error) {
+	resp = handleRule(req.Idfv, rule)
 	return
 }
 
