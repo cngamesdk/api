@@ -10,6 +10,7 @@ import (
 	"cngamesdk.com/api/model/sql/log"
 	"context"
 	"fmt"
+	error2 "github.com/cngamesdk/go-core/model/error"
 	"github.com/cngamesdk/go-core/model/sql"
 	"github.com/cngamesdk/go-core/model/sql/common"
 	"github.com/duke-git/lancet/v2/mathutil"
@@ -175,14 +176,29 @@ func (receiver *PayChannelSwitchService) getPayChannelByWeight(ctx context.Conte
 		cacheKey                             string // 缓存键值
 		common.DimPayChannelSwitchPayChannel        // 配置
 	}
-	totalWeight := 0
-	totalExistsNum := 0
-	cacheKeyFormat := "pay-channel-switch-%d-%d"
-	var payChannelsContainer []payChannelItem
+	totalActiveWeight := 0     //主总权重
+	totalActiveExistsNum := 0  //主总存在的数量
+	totalStandbyWeight := 0    //备总权重
+	totalStandbyExistsNum := 0 //备总存在的数量
 	cacheClient := global.MyRedis
+	cacheKeyFormat := "pay-channel-switch-%d-%d"
+	var payChannelActiveContainer []payChannelItem
+	var payChannelStandbyContainer []payChannelItem
 	for _, item := range req.PayChannels {
+
+		//剔除无效支付渠道
+		payChannelModel := pay.NewDimPayChannelModel()
+		if takeErr := payChannelModel.Take(ctx, "*", "id = ? and status = ?", item.PayChannelId, sql.StatusNormal); takeErr != nil {
+			if !errors.Is(takeErr, error2.ErrorRecordIsNotFind) {
+				err = takeErr
+				global.Logger.ErrorCtx(ctx, "获取缓存支付渠道异常", zap.Error(takeErr))
+				return
+			}
+			global.Logger.WarnCtx(ctx, "支付渠道剔除", zap.Any("data", item))
+			continue
+		}
+
 		existsNum := 0
-		totalWeight += item.Weight
 		tempCacheKey := fmt.Sprintf(cacheKeyFormat, req.Id, item.PayChannelId)
 		existsResult, existsErr := cacheClient.Exists(ctx, tempCacheKey).Result()
 		if existsErr != nil {
@@ -199,28 +215,65 @@ func (receiver *PayChannelSwitchService) getPayChannelByWeight(ctx context.Conte
 			}
 			existsNum = cast.ToInt(getResult)
 		}
-		totalExistsNum += existsNum
-		payChannelsContainer = append(payChannelsContainer, payChannelItem{cacheKey: tempCacheKey, existsNum: existsNum, DimPayChannelSwitchPayChannel: item})
-	}
-	for _, item := range payChannelsContainer {
-		configRate := mathutil.Percent(cast.ToFloat64(item.Weight), cast.ToFloat64(totalWeight), 5)
-		existsRate := mathutil.Percent(cast.ToFloat64(item.existsNum), cast.ToFloat64(totalExistsNum), 5)
-		if existsRate <= configRate { //必须等于，防止单个配置
-
-			//设置缓存，自增
-			if _, incrErr := cacheClient.Incr(ctx, item.cacheKey).Result(); incrErr != nil {
-				err = incrErr
-				global.Logger.ErrorCtx(ctx, "设置自增数量异常", zap.Error(incrErr), zap.Any("data", item.cacheKey))
-				return
-			}
-			resp = item.PayChannelId
-
-			global.Logger.InfoCtx(ctx, "比例命中", zap.Any("item", item),
-				zap.Any("data", []interface{}{configRate, totalWeight, existsRate, totalExistsNum}))
-
-			return
+		if item.Mode == common.PayChannelSwitchModeActive {
+			totalActiveWeight += item.Weight
+			totalActiveExistsNum += existsNum
+			payChannelActiveContainer = append(payChannelActiveContainer,
+				payChannelItem{cacheKey: tempCacheKey, existsNum: existsNum, DimPayChannelSwitchPayChannel: item})
+		} else {
+			totalStandbyWeight += item.Weight
+			totalStandbyExistsNum += existsNum
+			payChannelStandbyContainer = append(payChannelStandbyContainer,
+				payChannelItem{cacheKey: tempCacheKey, existsNum: existsNum, DimPayChannelSwitchPayChannel: item})
 		}
 	}
+
+	//读取主配置
+	if len(payChannelActiveContainer) > 0 {
+		for _, item := range payChannelActiveContainer {
+			configRate := mathutil.Percent(cast.ToFloat64(item.Weight), cast.ToFloat64(totalActiveWeight), 5)
+			existsRate := mathutil.Percent(cast.ToFloat64(item.existsNum), cast.ToFloat64(totalActiveExistsNum), 5)
+			if existsRate <= configRate { //必须等于，防止单个配置
+
+				//设置缓存，自增
+				if _, incrErr := cacheClient.Incr(ctx, item.cacheKey).Result(); incrErr != nil {
+					err = incrErr
+					global.Logger.ErrorCtx(ctx, "设置自增数量异常", zap.Error(incrErr), zap.Any("data", item.cacheKey))
+					return
+				}
+				resp = item.PayChannelId
+
+				global.Logger.InfoCtx(ctx, "命中主配置", zap.Any("item", item),
+					zap.Any("data", []interface{}{configRate, totalActiveWeight, existsRate, totalActiveExistsNum}))
+
+				return
+			}
+		}
+	}
+
+	//读取备配置
+	if len(payChannelStandbyContainer) > 0 {
+		for _, item := range payChannelStandbyContainer {
+			configRate := mathutil.Percent(cast.ToFloat64(item.Weight), cast.ToFloat64(totalStandbyWeight), 5)
+			existsRate := mathutil.Percent(cast.ToFloat64(item.existsNum), cast.ToFloat64(totalStandbyExistsNum), 5)
+			if existsRate <= configRate { //必须等于，防止单个配置
+
+				//设置缓存，自增
+				if _, incrErr := cacheClient.Incr(ctx, item.cacheKey).Result(); incrErr != nil {
+					err = incrErr
+					global.Logger.ErrorCtx(ctx, "设置自增数量异常", zap.Error(incrErr), zap.Any("data", item.cacheKey))
+					return
+				}
+				resp = item.PayChannelId
+
+				global.Logger.InfoCtx(ctx, "命中备配置", zap.Any("item", item),
+					zap.Any("data", []interface{}{configRate, totalStandbyWeight, existsRate, totalStandbyExistsNum}))
+
+				return
+			}
+		}
+	}
+
 	return
 }
 
