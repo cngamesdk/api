@@ -5,7 +5,7 @@ go 1.24.0
 toolchain go1.24.7
 
 require (
-	github.com/cngamesdk/go-core v1.0.9-0.20260113033514-6e13924d2ae9
+	github.com/cngamesdk/go-core v1.0.9-0.20260116071357-fc06757a23aa
 	github.com/duke-git/lancet/v2 v2.3.8
 	github.com/gin-gonic/gin v1.11.0
 	github.com/golang-jwt/jwt/v5 v5.3.0
