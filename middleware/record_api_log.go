@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"cngamesdk.com/api/global"
 	"encoding/json"
+	log2 "github.com/cngamesdk/go-core/log"
 	"github.com/gin-gonic/gin"
 	"github.com/panjf2000/ants/v2"
 	"go.uber.org/zap"
@@ -110,8 +111,8 @@ func Record2File() gin.HandlerFunc {
 
 		//采用协程池
 		if submitErr := recordLogPool.Submit(func() {
-			//record.Body = log2.ReplaceStrSensitiveData(record.Body, []byte(global.Config.Common.AesCryptKey))
-			//record.Resp = log2.ReplaceStrSensitiveData(record.Resp, []byte(global.Config.Common.AesCryptKey))
+			record.Body = log2.ReplaceStrSensitiveData(record.Body)
+			record.Resp = log2.ReplaceStrSensitiveData(record.Resp)
 			global.Logger.InfoCtx(c, "api_record", zap.Any("log", record))
 		}); submitErr != nil {
 			global.Logger.Error("协程池提交异常", zap.Error(submitErr))
