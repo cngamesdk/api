@@ -12,7 +12,7 @@
 - 等
 
 # 手游安卓SDK体验Demo
-<video src="https://github.com/user-attachments/assets/1a4e48eb-7daf-43cf-a917-cbd6a2adfb36" controls="controls" muted="muted" class="d-block rounded-bottom-2 border-top width-fit" style="max-height:640px; min-height: 200px">
+<video src="https://github.com/user-attachments/assets/db8ab385-2057-4522-a889-be7bd6effaeb" controls="controls" muted="muted" class="d-block rounded-bottom-2 border-top width-fit" style="max-height:640px; min-height: 200px">
 </video>
 
 # 对接文档
